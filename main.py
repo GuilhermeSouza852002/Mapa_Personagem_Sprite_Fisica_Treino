@@ -6,7 +6,7 @@ from settings import *
 
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height)) #Definindo a janela de exibição
-pygame.display.set_caption('Game teste 1')  #Nome do display
+pygame.display.set_caption('Game_teste_1')  #Nome do display
 clock = pygame.time.Clock() #Pygame que inicializa um relógio Pygame e executa um loop contínuo
 
 
