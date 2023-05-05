@@ -6,21 +6,21 @@ from csv import reader
 
 #transformando o arquivo csv em lista
 def import_csv_layout(path):
-    terrain_map = []
-    with open(path) as map:
-        level = reader(map,delimiter = ',')
+    terrain_map = []    #criada uma lista vazia
+    with open(path) as map: # usando a função open e o comando with, que garante que o arquivo seja fechado corretamente após o uso.
+        level = reader(map,delimiter = ',') #A função reader recebe dois parâmetros: o arquivo CSV e o delimitador utilizado para separar as colunas do arquivo (neste caso, uma vírgula).
         for row in level:
-            terrain_map.append(list(row))
+            terrain_map.append(list(row))   #a função converte a linha em uma lista usando a função list 
         return terrain_map  
 
 def import_folder_images_dict(path):    #função para teste dos arquivos, só pra saber se o problema ta no diretorio ou no codigo
-    terrain_dict = {}
+    terrain_dict = {}   #criado um dicionário vazio
     
-    for folder_name, sub_folders, img_files in walk(path):
+    for folder_name, sub_folders, img_files in walk(path):  #A função então itera através de todas as pastas e arquivos na pasta especificada em path, usando a função walk do módulo os.
         for image_name in img_files:
             full_path = path + '/' + image_name
             image_surf = pygame.image.load(full_path)
-            terrain_dict[image_name.split('.')[0]] = image_surf
+            terrain_dict[image_name.split('.')[0]] = image_surf #A função então usa o método split da string image_name para separar o nome do arquivo e sua extensão, que é usada para criar a chave do dicionário.
             
     return terrain_dict
     
