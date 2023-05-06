@@ -1,7 +1,8 @@
 import pygame
 from support import import_csv_layout, import_cut_graphics, import_folder_images_dict
-from settings import tiles_size
+from settings import *
 from tiles import Tile, StaticTile
+from player import *
 from game_data import directory1
 
 class Level:
@@ -10,6 +11,10 @@ class Level:
         
         terrain_layout = import_csv_layout(level_data['Terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'Terrain')    #chama o método create_tile_group para criar um grupo de sprites (imagens ou objetos que podem ser desenhados na tela) a partir do layout do terreno. O método create_tile_group recebe o layout do terreno e uma string 'Terrain' como parâmetros, e provavelmente retorna um grupo de sprites que representam o terreno do nível. Esses sprites podem ser desenhados na tela posteriormente usando a superfície display_surface.
+        
+        #player_layout = import_csv_layout(level_data['Player'])
+        #self.player = pygame.sprite.GroupSingle()
+        #self.player_setup(player_layout)
         
         terrain_tiles_images = import_folder_images_dict(directory1) #função Python que usa a biblioteca Pygame para carregar imagens de uma pasta especificada e retorna um dicionário que mapeia os nomes das imagens (sem a extensão do arquivo) para objetos de imagem 
         print(terrain_tiles_images)
@@ -23,8 +28,6 @@ class Level:
                     #o método calcula as coordenadas x e y do sprite com base na linha e coluna atuais do loop, multiplicando-as pelo tamanho dos tiles do jogo (tiles_size).
                     x = col_index * tiles_size  #obtendo a posição de x
                     y = row_index * tiles_size  #obtendo a posição de y
-    
-            
                    
                     if type == 'Terrain':
                                 sprite = Tile(tiles_size,x,y)
