@@ -2,19 +2,20 @@ import pygame
 from support import import_csv_layout, import_cut_graphics, import_folder_images_dict
 from settings import *
 from tiles import Tile, StaticTile
-from player import *
+#from player import *
 from game_data import directory1
 
 class Level:
     def __init__(self,level_data,surface):  #O parâmetro level_data é um dicionário que provavelmente contém informações sobre o nível do jogo, como o mapa, os personagens, inimigos, itens, etc. O parâmetro surface é a superfície do Pygame na qual o nível será desenhado.
         self.display_surface = surface  #inicializa a variável display_surface com a superfície recebida como parâmetro.
         
+        
+        player_layout = import_csv_layout(level_data['Player'])
+        self.player = pygame.sprite.GroupSingle()
+        self.player_setup(player_layout)
+        
         terrain_layout = import_csv_layout(level_data['Terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'Terrain')    #chama o método create_tile_group para criar um grupo de sprites (imagens ou objetos que podem ser desenhados na tela) a partir do layout do terreno. O método create_tile_group recebe o layout do terreno e uma string 'Terrain' como parâmetros, e provavelmente retorna um grupo de sprites que representam o terreno do nível. Esses sprites podem ser desenhados na tela posteriormente usando a superfície display_surface.
-        
-        #player_layout = import_csv_layout(level_data['Player'])
-        #self.player = pygame.sprite.GroupSingle()
-        #self.player_setup(player_layout)
         
         terrain_tiles_images = import_folder_images_dict(directory1) #função Python que usa a biblioteca Pygame para carregar imagens de uma pasta especificada e retorna um dicionário que mapeia os nomes das imagens (sem a extensão do arquivo) para objetos de imagem 
         print(terrain_tiles_images)
@@ -41,6 +42,19 @@ class Level:
                                 
         return sprite_group
         
+    def player_setup(self,layout):
+        for row_index, row in enumerate(layout):
+            for col_index,val in enumerate(row):
+                x = col_index * tiles_size
+                y = row_index * tiles_size
+                if val == '0':
+                    print('Jogador aqui!')
+                    #sprite = Player((x,y),self.display_surface, self.collision_sprites)
+                    #self.player.add(sprite)
+    
     def run(self):
         self.terrain_sprites.draw(self.display_surface)
         self.terrain_sprites.update(0)
+        
+        #self.player.update()
+        #self.player.draw(self.display_surface)

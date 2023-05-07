@@ -4,6 +4,21 @@ from os import walk
 from settings import tiles_size
 from csv import reader
 
+def import_folder(path, frame_width, frame_height): #importar uma pasta de spritesheets em uma lista de superfícies no Pygame. Cada spritesheet é recortada em frames individuais com base nas dimensões fornecidas.
+    surface_list = []
+
+    spritesheet = pygame.image.load(path).convert_alpha()
+    sheet_width, sheet_height = spritesheet.get_size()
+
+    #o loop externo percorre as linhas (coordenada Y) e o loop interno percorre as colunas (coordenada X). Isso garante que os frames sejam importados corretamente na ordem correta.
+    for y in range(0, sheet_height, frame_height):
+        for x in range(0, sheet_width, frame_width):
+            frame = pygame.Surface((frame_width, frame_height)).convert_alpha() #pygame.Surface((frame_width, frame_height)).convert_alpha() cria uma nova superfície para cada frame com canal alfa habilitado, o que permite uma melhor manipulação e transparência das imagens.
+            frame.blit(spritesheet, (0, 0), (x, y, frame_width, frame_height))
+            surface_list.append(frame)
+
+    return surface_list
+
 #transformando o arquivo csv em lista
 def import_csv_layout(path):
     terrain_map = []    #criada uma lista vazia
