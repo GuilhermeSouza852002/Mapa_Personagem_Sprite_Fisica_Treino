@@ -1,5 +1,5 @@
 import pygame
-from support import import_csv_layout, import_cut_graphics, import_folder_images_dict
+from support import *
 from settings import *
 from tiles import Tile, StaticTile
 #from player import *
@@ -17,8 +17,20 @@ class Level:
         terrain_layout = import_csv_layout(level_data['Terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'Terrain')    #chama o método create_tile_group para criar um grupo de sprites (imagens ou objetos que podem ser desenhados na tela) a partir do layout do terreno. O método create_tile_group recebe o layout do terreno e uma string 'Terrain' como parâmetros, e provavelmente retorna um grupo de sprites que representam o terreno do nível. Esses sprites podem ser desenhados na tela posteriormente usando a superfície display_surface.
         
+        #print dos tijolos do mapa
         terrain_tiles_images = import_folder_images_dict(directory1) #função Python que usa a biblioteca Pygame para carregar imagens de uma pasta especificada e retorna um dicionário que mapeia os nomes das imagens (sem a extensão do arquivo) para objetos de imagem 
         print(terrain_tiles_images)
+        
+        #print do recorte da spritesheet
+        path = 'Graphics/Character/AnimationSheet_Character.png' 
+
+        frames = import_folder(path, frame_width, frame_height)
+
+        # Verificar o conteúdo dos frames
+        for i, frames in enumerate(frames):
+            print(f"Frames {i+1}:")
+            print(frames)
+            print("---")
         
     #percorre as linhas do mapa e as númera
     def create_tile_group(self,layout,type):

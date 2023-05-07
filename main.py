@@ -2,6 +2,7 @@ import pygame, sys
 from settings import *
 from level import Level
 from game_data import *
+from support import *
 
 #Setup do pygame
 #Iniciação do jogo
@@ -19,9 +20,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-            
+
+
     screen.fill('black')
-    level.run()     
+    level.run()   
     pygame.display.update() #Atualiza a exibição usando
     clock.tick(fps) #Define a taxa máxima de quadros do jogo
     

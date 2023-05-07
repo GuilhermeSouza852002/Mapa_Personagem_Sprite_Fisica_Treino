@@ -1,8 +1,10 @@
 import pygame
 import os
 from os import walk
-from settings import tiles_size
+from settings import *
 from csv import reader
+
+
 
 def import_folder(path, frame_width, frame_height): #importar uma pasta de spritesheets em uma lista de superfícies no Pygame. Cada spritesheet é recortada em frames individuais com base nas dimensões fornecidas.
     surface_list = []
