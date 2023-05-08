@@ -23,7 +23,7 @@ while True:
 
 
     screen.fill('black')
-    level.run()   
+    level.run()
     pygame.display.update() #Atualiza a exibição usando
     clock.tick(fps) #Define a taxa máxima de quadros do jogo
     

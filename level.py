@@ -2,16 +2,16 @@ import pygame
 from support import *
 from settings import *
 from tiles import Tile, StaticTile
-#from player import *
+from player import *
 from game_data import directory1
 
 class Level:
     def __init__(self,level_data,surface):  #O parâmetro level_data é um dicionário que provavelmente contém informações sobre o nível do jogo, como o mapa, os personagens, inimigos, itens, etc. O parâmetro surface é a superfície do Pygame na qual o nível será desenhado.
         self.display_surface = surface  #inicializa a variável display_surface com a superfície recebida como parâmetro.
         
-        
         player_layout = import_csv_layout(level_data['Player'])
         self.player = pygame.sprite.GroupSingle()
+        #self.camera_group = CameraGroup()
         self.player_setup(player_layout)
         
         terrain_layout = import_csv_layout(level_data['Terrain'])
@@ -60,13 +60,51 @@ class Level:
                 x = col_index * tiles_size
                 y = row_index * tiles_size
                 if val == '0':
-                    print('Jogador aqui!')
-                    #sprite = Player((x,y),self.display_surface, self.collision_sprites)
-                    #self.player.add(sprite)
-    
+                    #print('Jogador aqui!')
+                    sprite = Player((x,y),self.display_surface)
+                    self.player.add(sprite)
+                    
     def run(self):
         self.terrain_sprites.draw(self.display_surface)
         self.terrain_sprites.update(0)
         
-        #self.player.update()
-        #self.player.draw(self.display_surface)
+        self.player.update()
+        self.player.draw(self.display_surface)  # chame o método custom_draw do objeto CameraGroup
+                    
+class CameraGroup(pygame.sprite.GroupSingle):	#herdando sprite.Group
+	def __init__(self):
+		super().__init__()
+		self.display_surface = pygame.display.get_surface()	#estamos dando ao CameraGroup o que queremos desenhar, assim não á necessidade de passar nenhum argumento para custom_draw
+		self.offset = pygame.math.Vector2(100,300) #posição superior a esquerda x e y
+
+		# camera
+  		# devemos pegar a posição e o tamanho do retângulo
+		cam_left = camera_borders['left']	#cria uma borda do tamanho que foi definido o left
+		cam_top = camera_borders['top']		#cria uma borda do tamanho que foi definido o top
+		#descobrindo a altura e a lagurar do retângulo
+		cam_width = self.display_surface.get_size()[0] - (cam_left + camera_borders['right'])	#subtrai a largura total da tela left e right pra gerar a borda da tela da nova largura
+		cam_height = self.display_surface.get_size()[1] - (cam_top + camera_borders['bottom'])	#subtrai a autura total da tela top e bottom pra gerar a borda da tela da nova autura
+
+		self.camera_rect = pygame.Rect(cam_left,cam_top,cam_width,cam_height) #pegando a camera que sera movida pelo jogador
+
+	def custom_draw(self,player):
+     	# movendo a camera
+		if player.rect.left < self.camera_rect.left:	#o player esta mais para a esquerda da camera
+			self.camera_rect.left = player.rect.left	#então a camera é destruida e jogada para a esquerda
+		if player.rect.right > self.camera_rect.right:	#o player esta mais para a direita da camera
+			self.camera_rect.right = player.rect.right	#então a camera é destruida e jogada para a direita
+		if player.rect.top < self.camera_rect.top:		#o player esta mais para cima da camera
+			self.camera_rect.top = player.rect.top		#então a camera é destruida e jogada para cima
+		if player.rect.bottom > self.camera_rect.bottom:#o player esta mais para baixo da camera
+			self.camera_rect.bottom = player.rect.bottom#então a camera é destruida e jogada para baixo
+
+		# camera offset 
+		# deslocamento da camera
+		self.offset = pygame.math.Vector2(
+      	# pegando a posição superior esquerda da tela para que o jogador sempre esteja no centro da tela	
+			self.camera_rect.left - camera_borders['left'],
+			self.camera_rect.top - camera_borders['top'])
+
+		for sprite in self.sprites():	#replicando todos os elementos na tela
+			offset_pos = sprite.rect.topleft - self.offset #posição de deslocamento automatico
+			self.display_surface.blit(sprite.image,offset_pos) #desenhado todos os elementos na tela

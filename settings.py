@@ -7,4 +7,12 @@ tiles_size = 32             #tamanho do bloco em pixels
 frame_width = 32
 frame_height = 32
 
+#bordas da camera
+camera_borders = {
+    'left': 400,
+    'right': 400,
+	'top':200,
+	'bottom': 200
+}
+
 fps = 60                    #taxa máxima de quadros do jogo
