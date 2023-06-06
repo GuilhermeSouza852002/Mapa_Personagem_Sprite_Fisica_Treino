@@ -56,15 +56,16 @@ class Level:
                 y = row_index * tiles_size
                 if val == '0':
                     sprite = Player((x, y), [self.visible_sprites, self.active_sprites], self.collision_sprites)
-                    self.active_sprites.add(sprite)
+                    self.visible_sprites.add(sprite)
+
                     
     def run(self):
-        
-        self.terrain_sprites.draw(self.display_surface)
         self.terrain_sprites.update(0)
-        
-        self.active_sprites.update()
-        self.visible_sprites.custom_draw(self.active_sprites)
+        self.terrain_sprites.draw(self.display_surface)
+
+        self.visible_sprites.update()
+        self.visible_sprites.custom_draw(self.visible_sprites)
+
                     
 class CameraGroup(pygame.sprite.Group):
     def __init__(self):
