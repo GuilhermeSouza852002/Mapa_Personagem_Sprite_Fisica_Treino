@@ -66,6 +66,7 @@ class Level:
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
+        # player sprites
         self.player.update()
         self.player.draw(self.display_surface)
 
