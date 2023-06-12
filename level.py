@@ -7,22 +7,24 @@ from game_data import directory1
 
 class Level:
     def __init__(self, level_data, surface):  #O parâmetro level_data é um dicionário que provavelmente contém informações sobre o nível do jogo, como o mapa, os personagens, inimigos, itens, etc. O parâmetro surface é a superfície do Pygame na qual o nível será desenhado.
+        # general setup
         self.display_surface = surface  #inicializa a variável display_surface com a superfície recebida como parâmetro.
+        self.world_shift = 0
         
-        # sprite group setup
-        self.visible_sprites = CameraGroup()
-        self.active_sprites = pygame.sprite.Group()
-        self.collision_sprites = pygame.sprite.Group()
-        
+        # player
         player_layout = import_csv_layout(level_data['Player'])
+        self.player = pygame.sprite.GroupSingle()
         self.player_setup(player_layout)
         
+        # terrain setup
         terrain_layout = import_csv_layout(level_data['Terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'Terrain')
         
+        #print terrain
         terrain_tiles_images = import_folder_images_dict(directory1)
         print(terrain_tiles_images)
         
+        #print spritesheets
         path = 'Graphics/Character/AnimationSheet_Character.png'
         frames = import_folder(path, frame_width, frame_height)
         
@@ -55,18 +57,20 @@ class Level:
                 x = col_index * tiles_size
                 y = row_index * tiles_size
                 if val == '0':
-                    sprite = Player((x, y), [self.visible_sprites, self.active_sprites], self.collision_sprites)
-                    self.visible_sprites.add(sprite)
+                    sprite = Player((x,y),self.display_surface)
+                    self.player.add(sprite)
 
                     
     def run(self):
-        self.terrain_sprites.update(0)
+        # terrain 
+        self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
-        self.visible_sprites.update()
-        self.visible_sprites.custom_draw(self.visible_sprites)
+        self.player.update()
+        self.player.draw(self.display_surface)
 
-                    
+"""  
+#Movimentação da camera               
 class CameraGroup(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
@@ -99,3 +103,4 @@ class CameraGroup(pygame.sprite.Group):
         for sprite in player.sprites():
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
+"""   

@@ -4,8 +4,8 @@ from settings import *
 
 #Corpo do player
 class Player(pygame.sprite.Sprite):
-    def __init__(self,pos, groups, collision_sprites):
-        super().__init__(groups)
+    def __init__(self,pos, surface):
+        super().__init__()
         self.image = pygame.Surface((32,32))    #tamanho player
         self.image.fill('#FFFFFF')  #cor player
         self.rect = self.image.get_rect(topleft = pos)
@@ -14,10 +14,11 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,0)
         self.speed = 5                           #velocidade player
         self.gravity = 0.8                       #gravidade
-        self.jump_speed = 16                     #velocidade do pulo
-        self.collision_sprites = collision_sprites
-        #self.display_surface = surface
+        self.jump_speed = -16                     #velocidade do pulo
+        
+        self.display_surface = surface
         self.on_floor = False                    #para o jogador não pular infinitamente, ela começa falsa
+        self.current_x = None
         
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -34,28 +35,54 @@ class Player(pygame.sprite.Sprite):
         
         #verifica se teve colisão de sprites na horizontal        
     def horizontal_movement_collision(self):
-        for sprite in self.collision_sprites.sprites():
-            if sprite.rect.colliderect(self.rect):
-                if self.direction.x < 0:    #se a direção for menor que zero o player esta indo para esquerda
-                    self.rect.left = sprite.rect.right  #então a colisão joga o player pra direita
-                elif self.direction.x > 0:  #se a direção for maior que zero o player esta indo para direita
-                    self.rect.right = sprite.rect.left  #então a colisão joga o player pra esquerda
-    
-    #verifica se teve colisão de sprites na vertical  
-    def vertical_movement_collidion(self):
-        for sprite in self.collision_sprites.sprites():
-            if sprite.rect.colliderect(self.rect):
-                if self.direction.y > 0:    #se a direção for maior que zero o player esta descendo
-                    self.rect.bottom = sprite.rect.top  #então a colisão joga o player pra cima
-                    self.direction.y = 0    #zeramos a gravidade para o player não atravessar o chão
-                    self.on_floor = True    #se o jogador tocar o chão ele pode pular novamente com essa condição
-                elif self.direction.y < 0:  #se a direção for menor que zero o player esta subindo
-                    self.rect.top = sprite.rect.bottom  #então a colisão joga o player pra baixo
-                    self.direction.y = 0    #zeramos a gravidade para o player não planar ao atingir o teto
-                
-            if self.on_floor and self.direction.y != 0: # se subirmos ou descermos, assim evita que o jogador possa dar um pulo no ar
-                self.on_floor =  False  # o on_floor se torna falso novamente      
-            
+        player = self.player.sprite
+        player.rect.x += player.direction.x * player.speed
+        collidable_sprites = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.fg_palm_sprites.sprites()
+        
+        for sprite in collidable_sprites:
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.x < 0: 
+                    player.rect.left = sprite.rect.right
+                    player.on_left = True
+                    self.current_x = player.rect.left
+                elif player.direction.x > 0:
+                    player.rect.right = sprite.rect.left
+                    player.on_right = True
+                    self.current_x = player.rect.right
+
+        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+            player.on_left = False
+        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+            player.on_right = False
+
+    def vertical_movement_collision(self):
+        player = self.player.sprite
+        player.apply_gravity()
+        collidable_sprites = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.fg_palm_sprites.sprites()
+
+        for sprite in collidable_sprites:
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.y > 0: 
+                    player.rect.bottom = sprite.rect.top
+                    player.direction.y = 0
+                    player.on_ground = True
+                elif player.direction.y < 0:
+                    player.rect.top = sprite.rect.bottom
+                    player.direction.y = 0
+                    player.on_ceiling = True
+
+        if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+            player.on_ground = False
+        if player.on_ceiling and player.direction.y > 0.1:
+            player.on_ceiling = False
+   
+    def get_player_on_ground(self):
+        if self.player.sprite.on_ground:
+            self.player_on_ground = True
+        else:
+            self.player_on_ground = False
+
+   
     def apply_gravity(self):
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
@@ -64,6 +91,7 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.rect.x += self.direction.x * self.speed
         self.horizontal_movement_collision()
+        self.get_player_on_ground()
         self.apply_gravity()
-        self.vertical_movement_collidion()
+        self.vertical_movement_collision()
         
