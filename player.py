@@ -20,6 +20,13 @@ class Player(pygame.sprite.Sprite):
         self.on_floor = False                    #para o jogador não pular infinitamente, ela começa falsa
         self.current_x = None
         
+        # player status
+        self.facing_right = True
+        self.on_ground = False
+        self.on_ceiling = False
+        self.on_left = False
+        self.on_right = False
+        
     def get_input(self):
         keys = pygame.key.get_pressed()
         
