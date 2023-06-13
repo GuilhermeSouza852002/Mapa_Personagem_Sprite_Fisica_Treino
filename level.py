@@ -59,8 +59,22 @@ class Level:
                 if val == '0':
                     sprite = Player((x,y),self.display_surface)
                     self.player.add(sprite)
-
                     
+    def scroll_x(self):
+        player = self.player.sprite
+        player_x = player.rect.centerx
+        direction_x = player.direction.x
+
+        if player_x < screen_width / 4 and direction_x < 0:
+            self.world_shift = 8
+            player.speed = 0
+        elif player_x > screen_width - (screen_width / 4) and direction_x > 0:
+            self.world_shift = -8
+            player.speed = 0
+        else:
+            self.world_shift = 0
+            player.speed = 8
+        
     def run(self):
         # terrain 
         self.terrain_sprites.update(self.world_shift)
@@ -68,40 +82,5 @@ class Level:
 
         # player sprites
         self.player.update(self.terrain_sprites)
+        self.scroll_x()
         self.player.draw(self.display_surface)
-
-"""  
-#Movimentação da camera               
-class CameraGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-        self.display_surface = pygame.display.get_surface()
-        self.offset = pygame.math.Vector2(100, 300)
-
-        cam_left = camera_borders['left']
-        cam_top = camera_borders['top']
-        cam_width = self.display_surface.get_size()[0] - (cam_left + camera_borders['right'])
-        cam_height = self.display_surface.get_size()[1] - (cam_top + camera_borders['bottom'])
-
-        self.camera_rect = pygame.Rect(cam_left, cam_top, cam_width, cam_height)
-
-    def custom_draw(self, player):
-        for sprite in player.sprites():  # Iterar sobre as sprites do player
-            if sprite.rect.left < self.camera_rect.left:
-                self.camera_rect.left = sprite.rect.left
-            if sprite.rect.right > self.camera_rect.right:
-                self.camera_rect.right = sprite.rect.right
-            if sprite.rect.top < self.camera_rect.top:
-                self.camera_rect.top = sprite.rect.top
-            if sprite.rect.bottom > self.camera_rect.bottom:
-                self.camera_rect.bottom = sprite.rect.bottom
-
-        self.offset = pygame.math.Vector2(
-            self.camera_rect.left - camera_borders['left'],
-            self.camera_rect.top - camera_borders['top']
-        )
-
-        for sprite in player.sprites():
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display_surface.blit(sprite.image, offset_pos)
-"""   

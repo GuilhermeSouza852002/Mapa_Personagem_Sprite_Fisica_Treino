@@ -2,6 +2,30 @@ import pygame
 from support import *
 from settings import *
 
+"""
+# Classe da câmera
+class Camera:
+    def __init__(self, width, height):
+        self.camera = pygame.Rect(0, 0, width, height)
+        self.width = width
+        self.height = height
+
+    def apply(self, entity):
+        return entity.rect.move(self.camera.topleft)
+
+    def update(self, target):
+        x = -target.rect.x + int(screen_width / 2)
+        y = -target.rect.y + int(screen_height / 2)
+
+        # Limita a câmera aos limites do cenário
+        x = min(0, x)  # limite esquerdo
+        y = min(0, y)  # limite superior
+        x = max(-(self.width - screen_width), x)  # limite direito
+        y = max(-(self.height - screen_height), y)  # limite inferior
+
+        self.camera = pygame.Rect(x, y, self.width, self.height)
+"""
+
 # Corpo do player
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, surface):
@@ -9,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((32, 32))  # tamanho player
         self.image.fill('#FFFFFF')  # cor player
         self.rect = self.image.get_rect(topleft=pos)
-
+        
         # movimentação do player
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 5  # velocidade player
@@ -89,7 +113,7 @@ class Player(pygame.sprite.Sprite):
     def apply_gravity(self):
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
-
+    
     def update(self, terrain_sprites):
         self.get_input()
         self.rect.x += self.direction.x * self.speed
