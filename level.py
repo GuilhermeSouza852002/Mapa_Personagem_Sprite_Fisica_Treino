@@ -67,7 +67,7 @@ class Level:
         self.terrain_sprites.draw(self.display_surface)
 
         # player sprites
-        self.player.update()
+        self.player.update(self.terrain_sprites)
         self.player.draw(self.display_surface)
 
 """  
