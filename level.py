@@ -5,6 +5,44 @@ from tiles import Tile, StaticTile
 from player import *
 from game_data import directory1
 
+class Camera:
+    def __init__(self, display_surface, player):
+        self.display_surface = display_surface
+        self.player = player
+        self.world_shift = pygame.Vector2(0, 0)
+
+    def update(self):
+        player_x = self.player.rect.centerx
+        player_y = self.player.rect.centery
+
+        if player_x < screen_width / 4 and self.player.direction.x < 0:
+            self.world_shift.x = 4
+            self.player.speed = 0
+        elif player_x > screen_width - (screen_width / 4) and self.player.direction.x > 0:
+            self.world_shift.x = -4
+            self.player.speed = 0
+        else:
+            self.world_shift.x = 0
+            self.player.speed = 4
+
+        if player_y < screen_height / 4 and self.player.direction.y < 0:
+            self.world_shift.y = 4
+            self.player.speed = 0
+        elif player_y > screen_height - (screen_height / 4) and self.player.direction.y > 0:
+            self.world_shift.y = -4
+            self.player.speed = 0
+        else:
+            self.world_shift.y = 0
+            self.player.speed = 4
+
+    def apply(self, sprite):
+        sprite.rect.x += self.world_shift.x
+        sprite.rect.y += self.world_shift.y
+
+    def apply_to_group(self, sprite_group):
+        for sprite in sprite_group:
+            self.apply(sprite)
+
 class Level:
     def __init__(self, level_data, surface):  #O parâmetro level_data é um dicionário que provavelmente contém informações sobre o nível do jogo, como o mapa, os personagens, inimigos, itens, etc. O parâmetro surface é a superfície do Pygame na qual o nível será desenhado.
         # general setup
@@ -19,6 +57,10 @@ class Level:
         # terrain setup
         terrain_layout = import_csv_layout(level_data['Terrain'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'Terrain')
+        
+        #Camera
+        camera = Camera(self.display_surface, self.player.sprite)
+        self.camera = camera
         
         #print terrain
         terrain_tiles_images = import_folder_images_dict(directory1)
@@ -59,28 +101,16 @@ class Level:
                 if val == '0':
                     sprite = Player((x,y),self.display_surface)
                     self.player.add(sprite)
-                    
-    def scroll_x(self):
-        player = self.player.sprite
-        player_x = player.rect.centerx
-        direction_x = player.direction.x
-
-        if player_x < screen_width / 4 and direction_x < 0:
-            self.world_shift = 8
-            player.speed = 0
-        elif player_x > screen_width - (screen_width / 4) and direction_x > 0:
-            self.world_shift = -8
-            player.speed = 0
-        else:
-            self.world_shift = 0
-            player.speed = 8
         
     def run(self):
-        # terrain 
+        self.camera.update()
+
+        # terrain
+        self.camera.apply_to_group(self.terrain_sprites)
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
         # player sprites
+        self.camera.apply(self.player.sprite)
         self.player.update(self.terrain_sprites)
-        self.scroll_x()
         self.player.draw(self.display_surface)
