@@ -11,33 +11,36 @@ class Camera:
         self.player = player
         self.world_shift = pygame.Vector2(0, 0)
 
+        self.speed = 12  # Velocidade da câmera (maior que a do jogador)
+
+        self.left_bound = screen_width // 4  # Limite esquerdo da câmera
+        self.right_bound = screen_width - (screen_width // 4)  # Limite direito da câmera
+        self.top_bound = screen_height // 4  # Limite superior da câmera
+        self.bottom_bound = screen_height - (screen_height // 4)  # Limite inferior da câmera
+
     def update(self):
         player_x = self.player.rect.centerx
         player_y = self.player.rect.centery
 
-        if player_x < screen_width / 4 and self.player.direction.x < 0:
-            self.world_shift.x = 4
-            self.player.speed = 0
-        elif player_x > screen_width - (screen_width / 4) and self.player.direction.x > 0:
-            self.world_shift.x = -4
-            self.player.speed = 0
-        else:
-            self.world_shift.x = 0
-            self.player.speed = 4
+        target_x = player_x - self.display_surface.get_width() / 2
+        target_y = player_y - self.display_surface.get_height() / 2
 
-        if player_y < screen_height / 4 and self.player.direction.y < 0:
-            self.world_shift.y = 4
-            self.player.speed = 0
-        elif player_y > screen_height - (screen_height / 4) and self.player.direction.y > 0:
-            self.world_shift.y = -4
-            self.player.speed = 0
-        else:
-            self.world_shift.y = 0
-            self.player.speed = 4
+        self.world_shift.x += (target_x - self.world_shift.x) / self.speed
+        self.world_shift.y += (target_y - self.world_shift.y) / self.speed
+
+        if self.world_shift.x < -self.left_bound:
+            self.world_shift.x = -self.left_bound
+        elif self.world_shift.x > self.right_bound:
+            self.world_shift.x = self.right_bound
+
+        if self.world_shift.y < -self.top_bound:
+            self.world_shift.y = -self.top_bound
+        elif self.world_shift.y > self.bottom_bound:
+            self.world_shift.y = self.bottom_bound
 
     def apply(self, sprite):
-        sprite.rect.x += self.world_shift.x
-        sprite.rect.y += self.world_shift.y
+        sprite.rect.x -= self.world_shift.x
+        sprite.rect.y -= self.world_shift.y
 
     def apply_to_group(self, sprite_group):
         for sprite in sprite_group:
