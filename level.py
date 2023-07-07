@@ -11,7 +11,7 @@ class Camera:
         self.player = player
         self.world_shift = pygame.Vector2(0, 0)
 
-        self.speed = 12  # Velocidade da câmera (maior que a do jogador)
+        self.speed = 1  # Velocidade da câmera (maior que a do jogador)
 
         self.left_bound = screen_width // 4  # Limite esquerdo da câmera
         self.right_bound = screen_width - (screen_width // 4)  # Limite direito da câmera
@@ -25,8 +25,11 @@ class Camera:
         target_x = player_x - self.display_surface.get_width() / 2
         target_y = player_y - self.display_surface.get_height() / 2
 
-        self.world_shift.x += (target_x - self.world_shift.x) / self.speed
-        self.world_shift.y += (target_y - self.world_shift.y) / self.speed
+        distance_x = target_x - self.world_shift.x
+        distance_y = target_y - self.world_shift.y
+
+        self.world_shift.x += distance_x / self.speed
+        self.world_shift.y += distance_y / self.speed
 
         if self.world_shift.x < -self.left_bound:
             self.world_shift.x = -self.left_bound
@@ -39,8 +42,12 @@ class Camera:
             self.world_shift.y = self.bottom_bound
 
     def apply(self, sprite):
-        sprite.rect.x -= self.world_shift.x
-        sprite.rect.y -= self.world_shift.y
+        if isinstance(sprite, StaticTile):
+            sprite.rect.x -= self.world_shift.x
+            sprite.rect.y -= self.world_shift.y
+        else:
+            sprite.rect.x -= self.world_shift.x
+            sprite.rect.y -= self.world_shift.y
 
     def apply_to_group(self, sprite_group):
         for sprite in sprite_group:

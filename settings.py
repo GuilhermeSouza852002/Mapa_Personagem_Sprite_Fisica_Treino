@@ -1,4 +1,4 @@
-screen_width = 1280         #largura tela
+screen_width = 700         #largura tela
 screen_height = 700         #altura tela
 vertical_tile_number = 100  #altura do mapa base do Tiled
 
