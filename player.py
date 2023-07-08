@@ -1,5 +1,4 @@
 import pygame
-import pygame.transform #biblioteca de espelhamento
 from support import *
 from settings import *
 
@@ -123,11 +122,11 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT]:  # direita
             self.direction.x = 1
             self.current_animation = 'andar_direita'  # Definir a animação atual
-            self.image = self.animation_dict[self.current_animation][0]  # Usar o primeiro frame da animação original
+            
         elif keys[pygame.K_LEFT]:  # esquerda
             self.direction.x = -1
             self.current_animation = 'andar_esquerda'  # Definir a animação atual
-            self.image = pygame.transform.flip(self.animation_dict[self.current_animation][0], True, False)  # Espelhar o primeiro frame da animação
+
         else:
             self.direction.x = 0
             self.current_animation = 'parado'  # Definir a animação atual
@@ -196,8 +195,12 @@ class Player(pygame.sprite.Sprite):
         self.get_player_on_ground()
         self.apply_gravity()
         self.vertical_movement_collision(terrain_sprites)
-        # Atualizar a imagem do sprite com base na animação atual
+        
         if self.current_animation is not None:
             sprites = self.animation_dict[self.current_animation]
             sprite_index = (pygame.time.get_ticks() // 100) % len(sprites)
             self.image = sprites[sprite_index]
+
+    # Espelhar a imagem se estiver andando para a esquerda
+        if self.direction.x < 0 and self.current_animation != 'parado':
+            self.image = pygame.transform.flip(self.image, True, False)
