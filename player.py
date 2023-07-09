@@ -105,11 +105,37 @@ class Player(pygame.sprite.Sprite):
             (0, 96, sprite_width, sprite_height),
             # Adicione mais coordenadas de recorte para os outros sprites de "andar para esquerda"
         ]
+        
+        atacar_direita_coordinates = [
+            (0, 256, sprite_width, sprite_height),    # Coordenadas do primeiro sprite de "andar para direita"
+            (32, 256, sprite_width, sprite_height),   # Coordenadas do segundo sprite de "andar para direita"
+            (64, 256, sprite_width, sprite_height),
+            (96, 256, sprite_width, sprite_height),
+            (128, 256, sprite_width, sprite_height),
+            (160, 256, sprite_width, sprite_height),
+            (192, 256, sprite_width, sprite_height),
+            (224, 256, sprite_width, sprite_height),
+            # Adicione mais coordenadas de recorte para os outros sprites de "andar para direita"
+        ]
+        
+        atacar_esquerda_coordinates = [
+            (0, 256, sprite_width, sprite_height),    # Coordenadas do primeiro sprite de "andar para direita"
+            (32, 256, sprite_width, sprite_height),   # Coordenadas do segundo sprite de "andar para direita"
+            (64, 256, sprite_width, sprite_height),
+            (96, 256, sprite_width, sprite_height),
+            (128, 256, sprite_width, sprite_height),
+            (160, 256, sprite_width, sprite_height),
+            (192, 256, sprite_width, sprite_height),
+            (224, 256, sprite_width, sprite_height),
+            # Adicione mais coordenadas de recorte para os outros sprites de "andar para direita"
+        ]
         # Carregar os sprites das animações e adicioná-los ao dicionário de animações
         self.animation_dict['parado'] = self.load_sprites(spritesheet, parado_coordinates)
         self.animation_dict['pular'] = self.load_sprites(spritesheet, pular_coordinates)
         self.animation_dict['andar_direita'] = self.load_sprites(spritesheet, andar_direita_coordinates)
         self.animation_dict['andar_esquerda'] = self.load_sprites(spritesheet, andar_esquerda_coordinates)
+        self.animation_dict['atacar_direita'] = self.load_sprites(spritesheet, atacar_direita_coordinates)
+        self.animation_dict['atacar_esquerda'] = self.load_sprites(spritesheet, atacar_esquerda_coordinates)
         
     def load_sprites(self, spritesheet, coordinates):
         sprites = []
@@ -127,18 +153,26 @@ class Player(pygame.sprite.Sprite):
                 self.current_animation = 'andar_direita'
             else:
                 self.current_animation = 'pular'
-
+        
+            if keys[pygame.K_a]:  # ataque direita
+                self.current_animation = 'atacar_direita'
+    
         elif keys[pygame.K_LEFT]:  # esquerda
             self.direction.x = -1
             if self.on_ground:
                 self.current_animation = 'andar_esquerda'
             else:
                 self.current_animation = 'pular'
-
+        
+            if keys[pygame.K_a]:  # ataque esquerda
+                self.current_animation = 'atacar_esquerda'
+    
         else:
             self.direction.x = 0
             if self.on_ground:
                 self.current_animation = 'parado'
+                if keys[pygame.K_a]:  # ataque parado
+                    self.current_animation = 'atacar_direita'  # ou 'atacar_esquerda' conforme a direção desejada
             else:
                 self.current_animation = 'pular'
 
