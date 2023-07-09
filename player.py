@@ -42,6 +42,8 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0.8  # gravidade
         self.jump_speed = 16  # velocidade do pulo
 
+        self.last_direction = 'direita'  # Atributo para rastrear a última direção do personagem
+        
         self.display_surface = surface
         self.current_x = None
         self.current_animation = None  # Adicione essa linha para definir o atributo current_animation como None
@@ -201,6 +203,15 @@ class Player(pygame.sprite.Sprite):
             sprite_index = (pygame.time.get_ticks() // 100) % len(sprites)
             self.image = sprites[sprite_index]
 
-    # Espelhar a imagem se estiver andando para a esquerda
-        if self.direction.x < 0 and self.current_animation != 'parado':
+        # Espelhar a imagem com base na última direção do personagem
+        if self.last_direction == 'esquerda':
             self.image = pygame.transform.flip(self.image, True, False)
+
+        # Atualizar a última direção do personagem se ele estiver se movendo
+        if self.direction.x < 0:
+            self.last_direction = 'esquerda'
+        elif self.direction.x > 0:
+            self.last_direction = 'direita'
+
+
+
