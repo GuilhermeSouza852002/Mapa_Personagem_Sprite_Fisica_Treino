@@ -123,19 +123,27 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_RIGHT]:  # direita
             self.direction.x = 1
-            self.current_animation = 'andar_direita'  # Definir a animação atual
-            
+            if self.on_ground:
+                self.current_animation = 'andar_direita'
+            else:
+                self.current_animation = 'pular'
+
         elif keys[pygame.K_LEFT]:  # esquerda
             self.direction.x = -1
-            self.current_animation = 'andar_esquerda'  # Definir a animação atual
+            if self.on_ground:
+                self.current_animation = 'andar_esquerda'
+            else:
+                self.current_animation = 'pular'
 
         else:
             self.direction.x = 0
-            self.current_animation = 'parado'  # Definir a animação atual
+            if self.on_ground:
+                self.current_animation = 'parado'
+            else:
+                self.current_animation = 'pular'
 
-        if keys[pygame.K_SPACE] and self.on_ground:  # o player só pode pular se apertar espaço e se on_floor for verdadeiro
+        if keys[pygame.K_SPACE] and self.on_ground:
             self.direction.y = -self.jump_speed
-            self.current_animation = 'pular'  # Definir a animação atual
 
 
     def horizontal_movement_collision(self, terrain_sprites):
